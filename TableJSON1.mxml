@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<js:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+              xmlns:j="library://ns.apache.org/royale/jewel"
+              xmlns:js="library://ns.apache.org/royale/basic"
+              xmlns:html="library://ns.apache.org/royale/html"
+              xmlns:services="services.*">
+
+    <fx:Script>
+        <![CDATA[
+           import org.apache.royale.events.Event;
+           import org.apache.royale.events.MouseEvent;
+           import org.apache.royale.jewel.Alert;
+           import org.apache.royale.collections.ArrayList;
+           //import com.adobe.serialization.json.JSON;
+
+           public function getGithubContent(event:MouseEvent):void
+           {
+               service.getContent();
+           }
+           
+           public function dataReadyHandler(event:Event):void
+            {
+               //Alert.show(service.jsonToString, "JSON data retrieved");
+               //jsonData.html = service.json.name +
+               //                 "abcd " + service.json.sha +
+               //                 "abcd " + service.json._links.html;
+                var strdatajson: String =service.jsonToString;
+               // hi.text="hi";
+                var jsonData:Object = JSON.parse(strdatajson);
+               //var jsonData:Object = JSON.parse(jsondata);
+               
+				//var dp:ArrayList = new ArrayList(jsonData);
+				//hi.text=jsonData[0].id;
+				//grid.dataProvider = jsonData;
+
+                var htmstr:String="<table border=1><tr><th>userID</th><th>id</th><th>title</th><th>body</th></tr>";
+
+                for(var i:int=0; i<jsonData.length; i++)
+                {
+                    htmstr=htmstr+"<tr><td>"+jsonData[i].userId+"</td>";
+                    htmstr=htmstr+"<td>"+jsonData[i].id+"</td>";
+                    htmstr=htmstr+"<td>"+jsonData[i].title+"</td>";
+                    htmstr=htmstr+"<td>"+jsonData[i].body+"</td></tr>";
+                }
+                htmstr=htmstr+"</table>";
+                jsnlbl.html=htmstr;
+
+            }
+        ]]>
+    </fx:Script>
+   
+    <fx:Declarations>
+        <services:GitHubService id="service"
+           sourceCodeUrl="https://jsonplaceholder.typicode.com/posts"
+           dataReady="dataReadyHandler(event)"/>
+    </fx:Declarations>
+
+    <js:initialView>
+        <js:View>
+            
+               
+                <js:Label id="jsnlbl" html=""/>
+
+               <!-- <j:Button text="Tabulate JSON Data" emphasis="primary" click="getGithubContent(event)"/>
+   
+                <j:DataGrid id="grid">
+		            <j:columns>
+			            <j:DataGridColumn label="userId" dataField="id"/>
+			            <j:DataGridColumn label="retweet count" dataField="retweet_count"/>
+		            </j:columns>
+	            </j:DataGrid>-->
+	            <js:Tree id="tree" x="30" y="30" width="400" height="500" 
+			 labelField="title" rowHeight="40" click="getGithubContent(event)">
+		<js:beads>
+			<js:ConstantBinding
+				sourceID="applicationModel"
+				sourcePropertyName="treeData"
+				destinationPropertyName="dataProvider" />
+		</js:beads>
+	</js:Tree>
+        </js:View>
+    </js:initialView>
+</js:Application>
